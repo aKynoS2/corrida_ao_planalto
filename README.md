@@ -101,10 +101,11 @@ Ordem de exploração é **livre** — mas cada região completada escala o boss
 ### Compilar e rodar
 
 ```bash
-git clone https://github.com/seu-usuario/corrida-ao-planalto.git
+git clone https://github.com/aKynoS2/corrida_ao_planalto.git
 cd corrida-ao-planalto
-gcc src/*.c -o planalto -Wall
-./planalto
+gcc gcc src/*.c -I./include -o jogo -Wall -Wextra -g
+jogo.exe (Windows)
+./jogo (Linux)
 ```
 
 ### Controles

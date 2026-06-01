@@ -1,0 +1,22 @@
+#ifndef MAPA_H
+#define MAPA_H
+  
+typedef struct {
+    char simbolo;
+    int transitavel;
+    int tem_inimigo;
+    int tem_bau;
+} CELULA;
+
+typedef struct {
+    CELULA grid[20][20];
+    int largura;
+    int altura;
+    int jogador_x;
+    int jogador_y;
+} MAPA;
+
+void imprimir_mapa(MAPA *mapa);
+DEFINICAO_SIMBOLO* buscar_simbolo(char s);
+
+#endif // MAPA_H

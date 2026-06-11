@@ -3,7 +3,7 @@
 
 #include "personagem.h"
 
-// Índices do catálogo — use esses defines no lugar de números mágicos
+// Índices do catálogo
 #define INIMIGO_LOBISTA                   0
 #define INIMIGO_BOT_REDE_SOCIAL           1
 #define INIMIGO_CABO_ELEITORAL            2

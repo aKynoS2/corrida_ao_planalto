@@ -21,15 +21,18 @@ typedef struct {
 } PERSONAGEM;
 
 typedef struct {
-    char nome[50];
-    int hp, hp_max;
-    int ataque;
-    int defesa;
-    int xp_recompensa;
-    int mana_drain;    // pro Lobista
-    int tipo;          // pra comportamentos especiais
+  char nome[50];
+  int hp, hp_max;
+  int ataque;
+  int defesa;
+  int xp_recompensa;
+  int mana_drain;    // pro Lobista
+  int tipo;          // pra comportamentos especiais
 } INIMIGO;
 
 void verificar_level_up(PERSONAGEM* jogador);
+void adicionar_item(PERSONAGEM* jogador, ITEM item);
+void mostrar_inventario(PERSONAGEM* jogador);
+void usar_item(PERSONAGEM* jogador, int indice);
 
 #endif // PERSONAGEM_H

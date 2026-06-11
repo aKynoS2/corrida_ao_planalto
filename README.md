@@ -150,8 +150,8 @@ corrida-ao-planalto/
 - [x] Catálogo de inimigos com stats únicos
 - [x] Símbolos Unicode no mapa
 - [x] Cores ANSI por tipo de célula
-- [ ] Inventário e itens
-- [ ] Baús e recompensas
+- [x] Inventário e itens
+- [x] Baús e recompensas
 - [ ] Múltiplas regiões
 - [ ] Sistema de aliados
 - [ ] Sistema de escândalos

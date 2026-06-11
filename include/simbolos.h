@@ -9,47 +9,47 @@
 // ============================================================
 
 // Paredes e estruturas
-#define SIM_PAREDE_SOLIDA    '█'
-#define SIM_PAREDE_GROSSA    '▓'
-#define SIM_PAREDE_MEDIA     '▒'
-#define SIM_PAREDE_FINA      '░'
-#define SIM_PAREDE_H         '═'   // horizontal (estilo caixa)
-#define SIM_PAREDE_V         '║'   // vertical   (estilo caixa)
-#define SIM_CANTO_TL         '╔'
-#define SIM_CANTO_TR         '╗'
-#define SIM_CANTO_BL         '╚'
-#define SIM_CANTO_BR         '╝'
-#define SIM_PAREDE_SIMPLES   '#'   // fallback ASCII
+#define SIM_PAREDE_SOLIDA    "█"
+#define SIM_PAREDE_GROSSA    "▓"
+#define SIM_PAREDE_MEDIA     "▒"
+#define SIM_PAREDE_FINA      "░"
+#define SIM_PAREDE_H         "═"
+#define SIM_PAREDE_V         "║"
+#define SIM_CANTO_TL         "╔"
+#define SIM_CANTO_TR         "╗"
+#define SIM_CANTO_BL         "╚"
+#define SIM_CANTO_BR         "╝"
+#define SIM_PAREDE_SIMPLES   "#"
 
 // Chão
-#define SIM_CHAO             '.'
-#define SIM_CHAO_PONTO       '·'
-#define SIM_CHAO_BOLA        '•'
+#define SIM_CHAO             "."
+#define SIM_CHAO_PONTO       "·"
+#define SIM_CHAO_BOLA        "•"
 
 // Natureza
-#define SIM_ARVORE_1         '♣'   // floresta densa
-#define SIM_ARVORE_2         '♠'   // floresta esparsa
-#define SIM_MONTANHA         '▲'
-#define SIM_AGUA             '~'
-#define SIM_AGUA_ONDAS       '≈'
+#define SIM_ARVORE_1         "♣"
+#define SIM_ARVORE_2         "♠"
+#define SIM_MONTANHA         "▲"
+#define SIM_AGUA             "~"
+#define SIM_AGUA_ONDAS       "≈"
 
 // Entidades
-#define SIM_JOGADOR          '@'
-#define SIM_INIMIGO          '☠'
-#define SIM_BAU              '■'
-#define SIM_BAU_PEQUENO      '▪'
+#define SIM_JOGADOR          "@"
+#define SIM_INIMIGO          "☠"
+#define SIM_BAU              "■"
+#define SIM_BAU_PEQUENO      "▪"
 
 // Saídas e pontos de interesse
-#define SIM_SAIDA            '◉'
-#define SIM_SAIDA_FECHADA    '○'
-#define SIM_ENTRADA          '◈'
+#define SIM_SAIDA            "◉"
+#define SIM_SAIDA_FECHADA    "○"
+#define SIM_ENTRADA          "◈"
 
 // ============================================================
 // Tabela de comportamento dos símbolos
 // ============================================================
 
 typedef struct {
-    char simbolo;
+    char simbolo[5];
     int transitavel;
     int tem_inimigo;
     int tem_bau;

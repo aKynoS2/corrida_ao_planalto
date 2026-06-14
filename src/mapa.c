@@ -23,6 +23,57 @@ void imprimir_mapa(MAPA *mapa) {
     }
 }
 
+void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
+    char linha[100];
+    int y = 0;
+
+    FILE *arquivo = fopen (caminho_arquivo, "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir mapa...");
+        return;
+    }
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        
+        linha[strcspn(linha, "\n")] = '\0';
+        
+        for (int x = 0; x < mapa->largura; x++) {
+            char tmp[2] = {linha[x], '\0'};
+            strcpy(mapa->grid[y][x].simbolo, tmp);
+      
+            // Define se a célula é transitável ou não
+            if (linha[x] == '#') {
+                mapa->grid[y][x].transitavel = 0;
+            } else {
+                mapa->grid[y][x].transitavel = 1;
+            }
+      
+            // Define se a célula tem inimigo ou não
+            if (linha[x] == 'E') {
+                mapa->grid[y][x].tem_inimigo = 1;
+            } else {
+                mapa->grid[y][x].tem_inimigo = 0;
+            }
+
+            // Define se a célula tem baú ou não
+            if (linha[x] == 'B') {
+                mapa->grid[y][x].tem_bau = 1;
+            } else {
+                mapa->grid[y][x].tem_bau = 0;
+            }
+
+            // Define se a célula tem saída
+            if (linha[x] == 'S') {
+                mapa->grid[y][x].tem_saida = 1;
+            } else {
+                mapa->grid[y][x].tem_saida = 0;
+            }
+        }
+        y++;
+    }
+    fclose (arquivo);
+}
+
 // ============================================================
 // Função de busca na tabela
 // Retorna o ponteiro pra definição do símbolo, ou NULL se não encontrado

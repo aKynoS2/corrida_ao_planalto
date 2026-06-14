@@ -23,58 +23,9 @@ int main () {
   jogador.defesa = 3;
   jogador.num_itens = 0;
 
-  char layout[20][21] = {
-    "####################",
-    "#..................#",
-    "#..................#",
-    "#..###...###.......#",
-    "#..#.......#.......#",
-    "#..#...E...#.......#",
-    "#..###...###.......#",
-    "#..................#",
-    "#....E.............#",
-    "#..................#",
-    "#.......@..........#",
-    "#..................#",
-    "#.........E........#",
-    "#..................#",
-    "#..###...###.......#",
-    "#..#.......#.......#", 
-    "#..#.......#...B...#",
-    "#..###...###.......#",
-    "#..................#",
-    "####################"
-  };
-
   srand(time(NULL));
 
-  for (int y = 0; y < mapa.altura; y++) {
-    for (int x = 0; x < mapa.largura; x++) {
-      char tmp[2] = { layout[y][x], '\0' };
-      strcpy(mapa.grid[y][x].simbolo, tmp);
-      
-      // Define se a célula é transitável ou não
-      if (layout[y][x] == '#') {
-        mapa.grid[y][x].transitavel = 0;
-      } else {
-        mapa.grid[y][x].transitavel = 1;
-      }
-      
-      // Define se a célula tem inimigo ou não
-      if (layout[y][x] == 'E') {
-        mapa.grid[y][x].tem_inimigo = 1;
-      } else {
-        mapa.grid[y][x].tem_inimigo = 0;
-      }
-
-      // Define se a célula tem baú ou não
-      if (layout[y][x] == 'B') {
-        mapa.grid[y][x].tem_bau = 1;
-      } else {
-        mapa.grid[y][x].tem_bau = 0;
-      }
-    }
-  }
+  carregar_mapa(&mapa, "data/maps/mapa_norte.txt");
 
   while (1) {
     limpar_tela();
@@ -135,6 +86,12 @@ int main () {
       mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_bau = 0;
       limpar_buffer();
       getchar(); // Aguarda o jogador pressionar Enter para continuar
+    }
+
+    if (mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_saida == 1) {
+      carregar_mapa(&mapa, "data/maps/mapa_nordeste.txt");
+      mapa.jogador_y = 10;
+      mapa.jogador_x = 1;
     }
 
     // Marca a nova posição do jogador no mapa

@@ -113,6 +113,7 @@ jogo.exe (Windows)
 | Tecla           | Ação                  |
 | --------------- | --------------------- |
 | `W` `A` `S` `D` | Mover pelo mapa       |
+| `I`             | Abrir inventário      |
 | `1`             | Atacar no combate     |
 | `2`             | Fugir do combate      |
 | `Enter`         | Confirmar / continuar |
@@ -123,18 +124,23 @@ jogo.exe (Windows)
 
 ```c
 corrida-ao-planalto/
+├── data/
+│   └── maps/
+│       ├── mapa_norte.txt
+│       └── mapa_nordeste.txt
 ├── include/
 │   ├── personagem.h    # structs: PERSONAGEM, INIMIGO, ITEM
 │   ├── mapa.h          # structs: MAPA, CELULA + funções de mapa
 │   ├── combate.h       # sistema de combate por turnos
 │   ├── inimigos.h      # catálogo de inimigos predefinidos
+│   ├── itens.h         # catálogo de itens predefinidos
 │   ├── simbolos.h      # tabela de símbolos Unicode do mapa
 │   └── utils.h         # utilitários: cores ANSI, limpar tela/buffer
 ├── src/
 │   ├── main.c          # loop principal do jogo
-│   ├── personagem.c    # lógica de personagem e level up
+│   ├── personagem.c    # lógica de personagem, inventário e level up
 │   ├── combate.c       # loop de combate
-│   ├── mapa.c          # renderização e navegação do mapa
+│   ├── mapa.c          # renderização, viewport e carregamento de mapas
 │   └── utils.c         # funções utilitárias
 └── saves/
     └── save1.dat       # arquivo de save binário
@@ -152,7 +158,8 @@ corrida-ao-planalto/
 - [x] Cores ANSI por tipo de célula
 - [x] Inventário e itens
 - [x] Baús e recompensas
-- [ ] Múltiplas regiões
+- [x] Mapas carregados via arquivo `.txt`
+- [x] Transição entre regiões (Norte → Nordeste)
 - [ ] Sistema de aliados
 - [ ] Sistema de escândalos
 - [ ] Save/Load

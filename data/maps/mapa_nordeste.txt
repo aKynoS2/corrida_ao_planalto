@@ -19,4 +19,4 @@
 #..................#
 ####################
 ---
-S 1 10 data/maps/mapa_norte.txt 18 10
+S 1 10 data/maps/mapa_norte.txt 17 10

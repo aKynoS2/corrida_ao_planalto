@@ -91,6 +91,7 @@ int main () {
 
     // Marca a posição atual do jogador como transitável antes de mover
     char tecla = getchar(); // Lê a tecla pressionada
+    limpar_buffer(); 
     
     // Atualiza a nova posição com base na tecla pressionada
     if (tecla == 'w') novo_y--;
@@ -137,22 +138,22 @@ int main () {
 
     // Verifica se o jogador encontrou um baú
     if (mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_bau == 1) {
-      int indice_item = rand() % NUM_ITENS;
-      ITEM item = catalogo_itens[indice_item];
-      item.quantidade = 1;
+        int indice_item = rand() % NUM_ITENS;
+        ITEM item = catalogo_itens[indice_item];
+        item.quantidade = 1;
     
-      mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_bau = 0;
-      strcpy(mapa.grid[mapa.jogador_y][mapa.jogador_x].simbolo, ".");
+        mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_bau = 0;
+        strcpy(mapa.grid[mapa.jogador_y][mapa.jogador_x].simbolo, ".");
     
-      adicionar_item(&jogador, item);
-      salvar_jogo(&jogador, &mapa, caminho);
+        adicionar_item(&jogador, item);
+        salvar_jogo(&jogador, &mapa, caminho);
     
-      limpar_tela();
-      printf("🎁 Você encontrou: %s!\n", item.nome);
-      printf("Pressione Enter para continuar...\n");
-      getchar();
+        printf("🎁 Você encontrou: %s!\n", item.nome);
+        printf("Pressione Enter para continuar...\n");
+        fflush(stdout);
+        getchar();  // ← Agora vai funcionar porque buffer tá limpo
     
-      continue;
+        continue;
     }
 
     if (mapa.grid[mapa.jogador_y][mapa.jogador_x].tem_saida == 1) {

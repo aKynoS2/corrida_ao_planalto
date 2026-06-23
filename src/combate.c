@@ -9,10 +9,13 @@ void combate (PERSONAGEM* jogador, INIMIGO* inimigo) {
   int acao;
 
   while (jogador -> hp > 0 && inimigo -> hp > 0) {
+    limpar_buffer();
+    
     //Turno do jogador
     printf("1. Atacar\n");
     printf("2. Fugir\n");
     scanf("%d", &acao);
+    limpar_buffer();
 
     if (acao == 1) {
       int dano = jogador->ataque - inimigo->defesa;
@@ -21,6 +24,7 @@ void combate (PERSONAGEM* jogador, INIMIGO* inimigo) {
       printf("Você causou %d de dano!\n", dano);
     } else {
       printf ("Você fugiu!\n"); 
+      getchar();
       break;
     }
 
@@ -40,7 +44,6 @@ void combate (PERSONAGEM* jogador, INIMIGO* inimigo) {
     jogador->exp += inimigo->xp_recompensa;
     printf("Você ganhou %d de experiência!", inimigo->xp_recompensa);
     verificar_level_up(jogador);
-    limpar_buffer();
     getchar();
   }
 }

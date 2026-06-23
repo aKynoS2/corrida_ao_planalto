@@ -36,11 +36,14 @@
 // Entidades
 #define SIM_JOGADOR          "@"
 #define SIM_INIMIGO          "☠"
+#define SIM_INIMIGO_SIMPLES  "E"
 #define SIM_BAU              "■"
+#define SIM_BAU_SIMPLES      "B"
 #define SIM_BAU_PEQUENO      "▪"
 
 // Saídas e pontos de interesse
 #define SIM_SAIDA            "◉"
+#define SIM_SAIDA_SIMPLES    "S"
 #define SIM_SAIDA_FECHADA    "○"
 #define SIM_ENTRADA          "◈"
 
@@ -53,35 +56,39 @@ typedef struct {
     int transitavel;
     int tem_inimigo;
     int tem_bau;
+    int tem_saida;
 } DEFINICAO_SIMBOLO;
 
 static DEFINICAO_SIMBOLO tabela_simbolos[] = {
-    // simbolo            transitavel  tem_inimigo  tem_bau
-    { SIM_PAREDE_SOLIDA,      0,           0,          0 },
-    { SIM_PAREDE_GROSSA,      0,           0,          0 },
-    { SIM_PAREDE_MEDIA,       0,           0,          0 },
-    { SIM_PAREDE_FINA,        1,           0,          0 },  // decorativo, transitável
-    { SIM_PAREDE_H,           0,           0,          0 },
-    { SIM_PAREDE_V,           0,           0,          0 },
-    { SIM_CANTO_TL,           0,           0,          0 },
-    { SIM_CANTO_TR,           0,           0,          0 },
-    { SIM_CANTO_BL,           0,           0,          0 },
-    { SIM_CANTO_BR,           0,           0,          0 },
-    { SIM_PAREDE_SIMPLES,     0,           0,          0 },
-    { SIM_CHAO,               1,           0,          0 },
-    { SIM_CHAO_PONTO,         1,           0,          0 },
-    { SIM_CHAO_BOLA,          1,           0,          0 },
-    { SIM_ARVORE_1,           0,           0,          0 },
-    { SIM_ARVORE_2,           0,           0,          0 },
-    { SIM_MONTANHA,           0,           0,          0 },
-    { SIM_AGUA,               0,           0,          0 },
-    { SIM_AGUA_ONDAS,         0,           0,          0 },
-    { SIM_INIMIGO,            1,           1,          0 },
-    { SIM_BAU,                1,           0,          1 },
-    { SIM_BAU_PEQUENO,        1,           0,          1 },
-    { SIM_SAIDA,              1,           0,          0 },
-    { SIM_SAIDA_FECHADA,      0,           0,          0 },
-    { SIM_ENTRADA,            1,           0,          0 },
+    // simbolo              transitavel  tem_inimigo  tem_bau  tem_saida
+    { SIM_PAREDE_SOLIDA,        0,           0,          0,       0 },
+    { SIM_PAREDE_GROSSA,        0,           0,          0,       0 },
+    { SIM_PAREDE_MEDIA,         0,           0,          0,       0 },
+    { SIM_PAREDE_FINA,          1,           0,          0,       0 },
+    { SIM_PAREDE_H,             0,           0,          0,       0 },
+    { SIM_PAREDE_V,             0,           0,          0,       0 },
+    { SIM_CANTO_TL,             0,           0,          0,       0 },
+    { SIM_CANTO_TR,             0,           0,          0,       0 },
+    { SIM_CANTO_BL,             0,           0,          0,       0 },
+    { SIM_CANTO_BR,             0,           0,          0,       0 },
+    { SIM_PAREDE_SIMPLES,       0,           0,          0,       0 },
+    { SIM_CHAO,                 1,           0,          0,       0 },
+    { SIM_CHAO_PONTO,           1,           0,          0,       0 },
+    { SIM_CHAO_BOLA,            1,           0,          0,       0 },
+    { SIM_ARVORE_1,             0,           0,          0,       0 },
+    { SIM_ARVORE_2,             0,           0,          0,       0 },
+    { SIM_MONTANHA,             0,           0,          0,       0 },
+    { SIM_AGUA,                 0,           0,          0,       0 },
+    { SIM_AGUA_ONDAS,           0,           0,          0,       0 },
+    { SIM_INIMIGO,              1,           1,          0,       0 },
+    { SIM_INIMIGO_SIMPLES,      1,           1,          0,       0 },
+    { SIM_BAU,                  1,           0,          1,       0 },
+    { SIM_BAU_PEQUENO,          1,           0,          1,       0 },
+    { SIM_BAU_SIMPLES,          1,           0,          1,       0 },
+    { SIM_SAIDA,                1,           0,          0,       1 },
+    { SIM_SAIDA_SIMPLES,        1,           0,          0,       1 },
+    { SIM_SAIDA_FECHADA,        0,           0,          0,       0 },
+    { SIM_ENTRADA,              1,           0,          0,       0 },
 };
 
 #define NUM_SIMBOLOS (sizeof(tabela_simbolos) / sizeof(tabela_simbolos[0]))

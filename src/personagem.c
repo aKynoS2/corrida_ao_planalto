@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "../include/utils.h"
 #include "../include/personagem.h"
 
 void verificar_level_up(PERSONAGEM* jogador) {
@@ -30,7 +31,7 @@ void mostrar_inventario(PERSONAGEM* jogador) {
     for (int i = 0; i < jogador->num_itens; i++) {
       ITEM item = jogador->inventario[i];
       printf("%d  |   %s    |     Tipo: %d    |   Valor: %d   |   Quantidade: %d\n", 
-             i + 1, item.nome, item.tipo, item.valor, item.quantidade);
+            i + 1, item.nome, item.tipo, item.valor, item.quantidade);
     }
   } 
 }

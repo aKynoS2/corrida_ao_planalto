@@ -20,7 +20,7 @@ typedef struct {
 } CELULA;
 
 typedef struct {
-    CELULA grid[20][20];
+    CELULA **grid;
     int largura;
     int altura;
     int jogador_x;

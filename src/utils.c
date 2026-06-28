@@ -39,7 +39,17 @@ void salvar_jogo(PERSONAGEM *jogador, MAPA *mapa, const char *caminho) {
     printf("Save vazio...");
   } else {
     fwrite(jogador, sizeof(PERSONAGEM), 1, arquivo);
-    fwrite(mapa, sizeof(MAPA), 1, arquivo);
+    fwrite(&mapa->largura,   sizeof(int), 1, arquivo);
+    fwrite(&mapa->altura,    sizeof(int), 1, arquivo);
+    fwrite(&mapa->jogador_x, sizeof(int), 1, arquivo);
+    fwrite(&mapa->jogador_y, sizeof(int), 1, arquivo);
+    fwrite(&mapa->num_saidas, sizeof(int), 1, arquivo);
+    fwrite(mapa->saidas, sizeof(SAIDA), mapa->num_saidas, arquivo);
+    fwrite(mapa->mapa_atual, sizeof(char), 50, arquivo);
+    
+    for (int y = 0; y < mapa->altura; y++) {
+        fwrite(mapa->grid[y], sizeof(CELULA), mapa->largura, arquivo);
+    }
     fclose(arquivo);
   }
 }
@@ -51,7 +61,27 @@ int carregar_jogo(PERSONAGEM *jogador, MAPA *mapa, const char *caminho) {
     return 0;
   } else {
     fread(jogador, sizeof(PERSONAGEM), 1, arquivo);
-    fread(mapa, sizeof(MAPA), 1, arquivo);
+    fread(&mapa->largura,    sizeof(int), 1, arquivo);
+    fread(&mapa->altura,     sizeof(int), 1, arquivo);
+    fread(&mapa->jogador_x,  sizeof(int), 1, arquivo);
+    fread(&mapa->jogador_y,  sizeof(int), 1, arquivo);
+    fread(&mapa->num_saidas, sizeof(int), 1, arquivo);
+    fread(mapa->saidas, sizeof(SAIDA), mapa->num_saidas, arquivo);
+    fread(mapa->mapa_atual, sizeof(char), 50, arquivo);
+
+    if (mapa->grid != NULL) {
+        for (int y = 0; y < mapa->altura; y++) {
+            free(mapa->grid[y]);
+        }
+        free(mapa->grid);
+        mapa->grid = NULL;
+    }
+    
+    mapa->grid = malloc(mapa->altura * sizeof(CELULA *));
+    for (int y = 0; y < mapa->altura; y++) {
+        mapa->grid[y] = malloc(mapa->largura * sizeof(CELULA));
+        fread(mapa->grid[y], sizeof(CELULA), mapa->largura, arquivo);
+    }
     fclose(arquivo);
     return 1;
   }

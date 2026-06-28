@@ -7,13 +7,15 @@
 void imprimir_mapa(MAPA *mapa) {
     int cam_x = mapa->jogador_x - (VIEWPORT_W / 2);
     int cam_y = mapa->jogador_y - (VIEWPORT_H / 2);
-    if (cam_x < 0) cam_x = 0;
-    if (cam_y < 0) cam_y = 0;
+    // Clamp de borda inferior (não passar do fim do mapa)
     if (cam_x + VIEWPORT_W > mapa->largura) cam_x = mapa->largura - VIEWPORT_W;
     if (cam_y + VIEWPORT_H > mapa->altura)  cam_y = mapa->altura - VIEWPORT_H;
+    // Clamp de borda superior (depois, para cobrir mapas menores que o viewport)
+    if (cam_x < 0) cam_x = 0;
+    if (cam_y < 0) cam_y = 0;
 
-    for (int y = cam_y; y < cam_y + VIEWPORT_H; y++) {
-        for (int x = cam_x; x < cam_x + VIEWPORT_W; x++) {
+    for (int y = cam_y; y < cam_y + VIEWPORT_H && y < mapa->altura; y++) {
+        for (int x = cam_x; x < cam_x + VIEWPORT_W && x < mapa->largura; x++) {
             if (x == mapa->jogador_x && y == mapa->jogador_y) {
                 printf("@");
             } else {
@@ -47,6 +49,14 @@ void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
 
     mapa->largura = largura_temp;
     mapa->altura = altura_temp;
+    
+    if (mapa->grid != NULL) {
+        for (int i = 0; i < mapa->altura; i++) {
+            free(mapa->grid[i]);
+        }
+        free(mapa->grid);
+        mapa->grid = NULL;
+    }
     
     mapa->grid = (CELULA **)malloc(mapa->altura * sizeof(CELULA *));
     for (int i = 0; i < mapa->altura; i++) {
@@ -92,7 +102,7 @@ void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
     fclose (arquivo);
 }
 
-DEFINICAO_SIMBOLO *buscar_simbolo(char s[5]) {
+DEFINICAO_SIMBOLO *buscar_simbolo(char s[2]) {
     for (int i = 0; i < (int)NUM_SIMBOLOS; i++) {
         if (strcmp(tabela_simbolos[i].simbolo, s) == 0) {
             return &tabela_simbolos[i];

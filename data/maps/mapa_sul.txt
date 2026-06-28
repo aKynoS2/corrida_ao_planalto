@@ -1,0 +1,18 @@
+##*###################*#######
+#,,,TTT....TTT.....TTT.,,,TTT#
+#..TTTT...TTTT....TTTT..E.TT.#
+#.TTTTT..TTTT...EETTTT...TTT.#
+#________TTT______TTT_____TT_#
+#,,.E...?.TTT.,,.E.TTT.,,..T.#
+#,..TTT...TTT...,..TTT.,..TT.#
+#..TTT....TTT...?.TTT....TTT.#
+#..T.E'...T'T.....'T....E.T..#
+#________TTT________TTT____T_#
+#,..TTT..TTTT..,,.TTTT....TT.#
+#..TTTT..TTTTT...TTTTT...TTT.#
+#.TTTTT.ETTTTTT.TTTTTT.,TTTT.#
+#,,,,TTT.TTTT.E.TTTT.E..TTT,,#
+##############################
+---
+S 2 0 data/maps/mapa_centro_oeste.txt 2 20
+S 22 0 data/maps/mapa_sudeste.txt 22 16

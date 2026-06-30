@@ -1,6 +1,11 @@
 #ifndef COMBATE_H
 #define COMBATE_H
 
-void combate (PERSONAGEM* jogador, INIMIGO* inimigo);
+// ============================================================
+// loop combate
+// ============================================================
+
+int combate (PERSONAGEM* jogador, INIMIGO* inimigo);
+void imprimir_tela_combate(PERSONAGEM *jogador, INIMIGO *inimigo);
 
 #endif // COMBATE_H

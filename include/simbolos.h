@@ -40,7 +40,7 @@ typedef struct {
     int tem_saida;
 } DEFINICAO_SIMBOLO;
 
-#define NUM_SIMBOLOS 19
+#define NUM_SIMBOLOS 20
 
 extern DEFINICAO_SIMBOLO tabela_simbolos[NUM_SIMBOLOS];
 

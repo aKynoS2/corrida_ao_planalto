@@ -3,6 +3,10 @@
 
 #include "personagem.h"
 
+// ============================================================
+// definição itens
+// ============================================================
+
 #define ITEM_SANTINHO          0
 #define ITEM_HORARIO_ELEITORAL 1
 #define ITEM_DOSSIE            2

@@ -5,6 +5,12 @@
 #include "mapa.h"
 
 // ============================================================
+// Definição buffer mensagens
+// ============================================================
+#define MAX_MENSAGENS 3
+#define TAM_MENSAGEM 80
+
+// ============================================================
 // Cores ANSI
 // ============================================================
 #define COR_VERMELHO      "\033[31m"
@@ -28,21 +34,15 @@
 #define MENU_NOVO_JOGO  1
 #define MENU_CARREGAR   2
 #define MENU_SAIR       3
+#define MENU_GAME_OVER  4
 
 // ============================================================
 // Utilitários
 // ============================================================
 void limpar_tela();
 void limpar_buffer();
+int ler_opcao_menu(const char *mensagem);
 int  extrair_slot_do_caminho(const char *caminho);
-
-// ============================================================
-// Menus
-// ============================================================
-int menu_principal(char *caminho_out);
-int menu_slot(int modo);
-int menu_confirmar_sobrescrita(int slot);
-int tela_pause(PERSONAGEM *jogador, MAPA *mapa, const char *caminho);
 
 // ============================================================
 // Save / Load
@@ -50,10 +50,21 @@ int tela_pause(PERSONAGEM *jogador, MAPA *mapa, const char *caminho);
 void salvar_jogo(PERSONAGEM *jogador, MAPA *mapa, const char *caminho);
 int  carregar_jogo(PERSONAGEM *jogador, MAPA *mapa, const char *caminho);
 void limpar_estados_slot(int slot);
+void inicializar_jogador(PERSONAGEM *jogador);
+void inicializar_mapa(MAPA *mapa);
+void iniciar_nova_partida(PERSONAGEM *jogador, MAPA *mapa, char *caminho, int slot);
+int ler_info_slot(int slot, int *nivel, char *regiao);
 
 // ============================================================
 // Loop principal
 // ============================================================
 int rodar_jogo (PERSONAGEM *jogador, MAPA *mapa, const char *caminho);
+
+// ============================================================
+// Buffer mensagens e HUD
+// ============================================================
+extern char mensagens[MAX_MENSAGENS][TAM_MENSAGEM];
+void adicionar_mensagem(const char *msg);
+void imprimir_hud (PERSONAGEM *jogador, MAPA *mapa);
 
 #endif // UTILS_H

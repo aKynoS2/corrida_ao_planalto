@@ -3,12 +3,24 @@
 
 #include "simbolos.h"
 
+// ============================================================
+// definição viewport
+// ============================================================
+
 #define VIEWPORT_W 40
 #define VIEWPORT_H 20
+
+// ============================================================
+// retornos verificar_celula
+// ============================================================
 
 #define CELULA_NORMAL    0
 #define CELULA_TRANSICAO 1
 #define CELULA_MORTE     2
+
+// ============================================================
+// structs mapa
+// ============================================================
 
 typedef struct {
     int x, y;
@@ -35,13 +47,37 @@ typedef struct {
     char mapa_atual[50];
 } MAPA;
 
+// ============================================================
+// carregamento e impressão
+// ============================================================
+
 void imprimir_mapa(MAPA *mapa);
 void carregar_mapa(MAPA *mapa, const char *caminho_arquivo);
+
+// ============================================================
+// busca dos símbolos na tabela
+// ============================================================
+
 DEFINICAO_SIMBOLO* buscar_simbolo(char s[2]);
+
+// ============================================================
+// save states do mapa
+// ============================================================
+
 void carregar_mapa_com_estado(MAPA *mapa, const char *caminho_txt, int slot);
 void salvar_mapa_com_estado(MAPA *mapa, int slot);
+
+// ============================================================
+// cores ANSI
+// ============================================================
+
 const char* cor_do_simbolo(char simbolo[2]);
-void mover_jogador(MAPA *mapa, int novo_x, int novo_y);
+
+// ============================================================
+// movimentação
+// ============================================================
+
+int mover_jogador(MAPA *mapa, int novo_x, int novo_y);
 int verificar_celula(MAPA *mapa, PERSONAGEM *jogador, const char *caminho, int slot);
 
 #endif // MAPA_H

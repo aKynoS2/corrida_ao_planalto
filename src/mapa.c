@@ -9,7 +9,13 @@
 #include "combate.h"
 #include "personagem.h"
 
+// ============================================================
+// impressão do mapa
+// ============================================================
+
 void imprimir_mapa(MAPA *mapa) {
+    // A câmera do mapa é ajustada para seguir o personagem e mostrar
+    // apenas uma janela fixa do cenário em vez de todo o mapa de uma vez.
     int cam_x = mapa->jogador_x - (VIEWPORT_W / 2);
     int cam_y = mapa->jogador_y - (VIEWPORT_H / 2);
     char buffer[32768];
@@ -43,13 +49,42 @@ void imprimir_mapa(MAPA *mapa) {
     fflush(stdout);
 }
 
-void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
-    FILE *arquivo = fopen(caminho_arquivo, "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir mapa...");
+// ============================================================
+// carregamento do mapa
+// ============================================================
+
+static void liberar_grade_mapa(MAPA *mapa) {
+    if (mapa->grid == NULL) {
         return;
     }
 
+    for (int i = 0; i < mapa->altura; i++) {
+        free(mapa->grid[i]);
+    }
+    free(mapa->grid);
+    mapa->grid = NULL;
+}
+
+static int alocar_grade_mapa(MAPA *mapa) {
+    mapa->grid = (CELULA **)malloc(mapa->altura * sizeof(CELULA *));
+    if (mapa->grid == NULL) {
+        return 0;
+    }
+
+    for (int i = 0; i < mapa->altura; i++) {
+        mapa->grid[i] = (CELULA *)malloc(mapa->largura * sizeof(CELULA));
+        if (mapa->grid[i] == NULL) {
+            for (int j = 0; j < i; j++) free(mapa->grid[j]);
+            free(mapa->grid);
+            mapa->grid = NULL;
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+static int ler_dimensoes_mapa(FILE *arquivo, int *largura, int *altura) {
     char linha[100];
     int altura_temp = 0;
     int largura_temp = 0;
@@ -65,25 +100,32 @@ void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
         altura_temp++;
     }
 
-    mapa->largura = largura_temp;
-    mapa->altura = altura_temp;
+    *largura = largura_temp;
+    *altura = altura_temp;
+    return 1;
+}
 
-    if (mapa->grid != NULL) {
-        for (int i = 0; i < mapa->altura; i++) {
-            free(mapa->grid[i]);
-        }
-        free(mapa->grid);
-        mapa->grid = NULL;
+static void aplicar_definicao_simbolo(CELULA *celula, const char *simbolo) {
+    strcpy(celula->simbolo, simbolo);
+
+    DEFINICAO_SIMBOLO *def = buscar_simbolo((char[2]){simbolo[0], '\0'});
+    if (def != NULL) {
+        celula->transitavel = def->transitavel;
+        celula->tem_inimigo = def->tem_inimigo;
+        celula->tem_bau = def->tem_bau;
+        celula->tem_saida = def->tem_saida;
+    } else {
+        celula->transitavel = 0;
+        celula->tem_inimigo = 0;
+        celula->tem_bau = 0;
+        celula->tem_saida = 0;
     }
+}
 
-    mapa->grid = (CELULA **)malloc(mapa->altura * sizeof(CELULA *));
-    for (int i = 0; i < mapa->altura; i++) {
-        mapa->grid[i] = (CELULA *)malloc(mapa->largura * sizeof(CELULA));
-    }
-
-    rewind(arquivo);
-
+static void carregar_grade_mapa(FILE *arquivo, MAPA *mapa) {
+    char linha[100];
     int y = 0;
+
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         if (linha[0] == '-') break;
         linha[strcspn(linha, "\n")] = '\0';
@@ -91,23 +133,14 @@ void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
 
         for (int x = 0; x < mapa->largura; x++) {
             char tmp[2] = {linha[x], '\0'};
-            strcpy(mapa->grid[y][x].simbolo, tmp);
-
-            DEFINICAO_SIMBOLO *def = buscar_simbolo(tmp);
-            if (def != NULL) {
-                mapa->grid[y][x].transitavel = def->transitavel;
-                mapa->grid[y][x].tem_inimigo = def->tem_inimigo;
-                mapa->grid[y][x].tem_bau = def->tem_bau;
-                mapa->grid[y][x].tem_saida = def->tem_saida;
-            } else {
-                mapa->grid[y][x].transitavel = 0;
-                mapa->grid[y][x].tem_inimigo = 0;
-                mapa->grid[y][x].tem_bau = 0;
-                mapa->grid[y][x].tem_saida = 0;
-            }
+            aplicar_definicao_simbolo(&mapa->grid[y][x], tmp);
         }
         y++;
     }
+}
+
+static void carregar_saidas_mapa(FILE *arquivo, MAPA *mapa) {
+    char linha[100];
 
     mapa->num_saidas = 0;
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
@@ -121,9 +154,109 @@ void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
             mapa->num_saidas++;
         }
     }
+}
+
+static void montar_caminho_estado(char *destino, size_t tamanho, int slot, const char *nome_mapa) {
+    snprintf(destino, tamanho, "data/saves/slot%d_%s.state", slot, nome_mapa);
+}
+
+static int carregar_estado_mapa(MAPA *mapa, int slot) {
+    const char *nome_mapa = strrchr(mapa->mapa_atual, '/');
+    if (nome_mapa) nome_mapa++;
+    else nome_mapa = mapa->mapa_atual;
+
+    char caminho_estado[100];
+    montar_caminho_estado(caminho_estado, sizeof(caminho_estado), slot, nome_mapa);
+
+    FILE *arquivo = fopen(caminho_estado, "rb");
+    if (arquivo == NULL) {
+        return 0;
+    }
+
+    int largura_salva, altura_salva;
+    if (fread(&largura_salva, sizeof(int), 1, arquivo) != 1 ||
+        fread(&altura_salva, sizeof(int), 1, arquivo) != 1) {
+        fclose(arquivo);
+        return 0;
+    }
+
+    if (largura_salva != mapa->largura || altura_salva != mapa->altura) {
+        fclose(arquivo);
+        return 0;
+    }
+
+    for (int i = 0; i < mapa->altura; i++) {
+        if (fread(mapa->grid[i], sizeof(CELULA), mapa->largura, arquivo) != (size_t)mapa->largura) {
+            fclose(arquivo);
+            return 0;
+        }
+    }
+
+    fclose(arquivo);
+    return 1;
+}
+
+static int salvar_estado_mapa(MAPA *mapa, int slot) {
+    const char *nome_mapa = strrchr(mapa->mapa_atual, '/');
+    if (nome_mapa) nome_mapa++;
+    else nome_mapa = mapa->mapa_atual;
+
+    char caminho_estado[100];
+    montar_caminho_estado(caminho_estado, sizeof(caminho_estado), slot, nome_mapa);
+
+    FILE *arquivo = fopen(caminho_estado, "wb");
+    if (arquivo == NULL) {
+        return 0;
+    }
+
+    fwrite(&mapa->largura, sizeof(int), 1, arquivo);
+    fwrite(&mapa->altura, sizeof(int), 1, arquivo);
+    for (int i = 0; i < mapa->altura; i++) {
+        fwrite(mapa->grid[i], sizeof(CELULA), mapa->largura, arquivo);
+    }
+
+    fclose(arquivo);
+    return 1;
+}
+
+void carregar_mapa(MAPA *mapa, const char *caminho_arquivo) {
+    // A leitura do arquivo de mapa é feita em duas etapas: primeiro para
+    // descobrir as dimensões e depois para preencher a grade com os símbolos.
+    FILE *arquivo = fopen(caminho_arquivo, "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo do mapa: %s\n", caminho_arquivo);
+        mapa->largura = 0;
+        mapa->altura = 0;
+        liberar_grade_mapa(mapa);
+        return;
+    }
+
+    int altura_temp = 0;
+    int largura_temp = 0;
+    ler_dimensoes_mapa(arquivo, &largura_temp, &altura_temp);
+
+    mapa->largura = largura_temp;
+    mapa->altura = altura_temp;
+    liberar_grade_mapa(mapa);
+
+    if (!alocar_grade_mapa(mapa)) {
+        printf("Erro ao reservar memória para o mapa.\n");
+        mapa->largura = 0;
+        mapa->altura = 0;
+        fclose(arquivo);
+        return;
+    }
+
+    rewind(arquivo);
+    carregar_grade_mapa(arquivo, mapa);
+    carregar_saidas_mapa(arquivo, mapa);
 
     fclose(arquivo);
 }
+
+// ============================================================
+// busca dos símbolos na tabela
+// ============================================================
 
 DEFINICAO_SIMBOLO *buscar_simbolo(char s[2]) {
     for (int i = 0; i < (int)NUM_SIMBOLOS; i++) {
@@ -134,61 +267,28 @@ DEFINICAO_SIMBOLO *buscar_simbolo(char s[2]) {
     return NULL;
 }
 
+// ============================================================
+// carrega e salva state dos mapas
+// ============================================================
+
 void carregar_mapa_com_estado(MAPA *mapa, const char *caminho_txt, int slot) {
+    // Ao carregar um mapa, também tenta restaurar o estado salvo do mesmo
+    // mapa para manter itens, inimigos e células alteradas entre sessões.
     carregar_mapa(mapa, caminho_txt);
     strcpy(mapa->mapa_atual, caminho_txt);
 
-    const char *nome_mapa = strrchr(caminho_txt, '/');
-    if (nome_mapa) nome_mapa++;
-    else nome_mapa = caminho_txt;
-
-    char caminho_estado[100];
-    sprintf(caminho_estado, "data/saves/slot%d_%s.state", slot, nome_mapa);
-
-    FILE *arquivo = fopen(caminho_estado, "rb");
-    if (arquivo != NULL) {
-        int largura_salva, altura_salva;
-
-        if (fread(&largura_salva, sizeof(int), 1, arquivo) != 1) {
-            fclose(arquivo); return;
-        }
-        if (fread(&altura_salva, sizeof(int), 1, arquivo) != 1) {
-            fclose(arquivo); return;
-        }
-        if (largura_salva != mapa->largura || altura_salva != mapa->altura) {
-            fclose(arquivo); return;
-        }
-        for (int i = 0; i < mapa->altura; i++) {
-            if (fread(mapa->grid[i], sizeof(CELULA), mapa->largura, arquivo) != (size_t)mapa->largura) {
-                fclose(arquivo); return;
-            }
-        }
-        fclose(arquivo);
-    }
+    carregar_estado_mapa(mapa, slot);
 }
 
 void salvar_mapa_com_estado(MAPA *mapa, int slot) {
-    const char *caminho_txt = mapa->mapa_atual;
-    const char *nome_mapa = strrchr(caminho_txt, '/');
-    if (nome_mapa) nome_mapa++;
-    else nome_mapa = caminho_txt;
-
-    char caminho_estado[100];
-    sprintf(caminho_estado, "data/saves/slot%d_%s.state", slot, nome_mapa);
-
-    FILE *arquivo = fopen(caminho_estado, "wb");
-    if (arquivo == NULL) {
-        printf("Aviso: nao foi possivel abrir arquivo de estado para salvar\n");
-        return;
+    if (!salvar_estado_mapa(mapa, slot)) {
+        printf("Aviso: não foi possivel abrir arquivo de estado para salvar\n");
     }
-
-    fwrite(&mapa->largura, sizeof(int), 1, arquivo);
-    fwrite(&mapa->altura,  sizeof(int), 1, arquivo);
-    for (int i = 0; i < mapa->altura; i++) {
-        fwrite(mapa->grid[i], sizeof(CELULA), mapa->largura, arquivo);
-    }
-    fclose(arquivo);
 }
+
+// ============================================================
+// cores em ANSI
+// ============================================================
 
 const char* cor_do_simbolo(char simbolo[2]) {
     if (strcmp(simbolo, "#") == 0) return COR_BRANCO;
@@ -214,24 +314,54 @@ const char* cor_do_simbolo(char simbolo[2]) {
     return RESET;
 }
 
-void mover_jogador(MAPA *mapa, int novo_x, int novo_y) {
+// ============================================================
+// movimentação
+// ============================================================
+
+int mover_jogador(MAPA *mapa, int novo_x, int novo_y) {
+    // Garante que o movimento fique dentro dos limites do mapa antes de
+    // tentar acessar a célula alvo.
+    if (novo_x < 0 || novo_y < 0 || novo_x >= mapa->largura || novo_y >= mapa->altura) {
+        return 0;
+    }
+
     if (mapa->grid[novo_y][novo_x].transitavel == 1) {
         mapa->jogador_x = novo_x;
         mapa->jogador_y = novo_y;
+        return 1;
     }
+
+    return 0;
 }
+
+// ============================================================
+// validação das células
+// ============================================================
 
 int verificar_celula(MAPA *mapa, PERSONAGEM *jogador, const char *caminho, int slot) {
     int y = mapa->jogador_y;
     int x = mapa->jogador_x;
 
+    if (x < 0 || y < 0 || x >= mapa->largura || y >= mapa->altura) {
+        return CELULA_NORMAL;
+    }
+
+    // Cada célula pode ter efeito especial ao ser visitada. Depois de
+    // processada, o estado da célula é alterado para evitar repetir a ação.
     if (mapa->grid[y][x].tem_inimigo == 1) {
         int indice = rand() % NUM_INIMIGOS;
         INIMIGO inimigo = catalogo_inimigos[indice];
-        printf("Voce encontrou um %s!\n", inimigo.nome);
+        
+        char buf[TAM_MENSAGEM];
+        snprintf(buf, sizeof(buf), "Você encontrou um %s!", inimigo.nome);
+        adicionar_mensagem(buf);
+        
         getchar();
-        combate(jogador, &inimigo);
+        int resultado_combate = combate(jogador, &inimigo);
         mapa->grid[y][x].tem_inimigo = 0;
+        if (resultado_combate == MENU_GAME_OVER) {
+            return CELULA_MORTE;
+        }
         strcpy(mapa->grid[y][x].simbolo, ".");
         salvar_jogo(jogador, mapa, caminho);
     }
@@ -246,9 +376,6 @@ int verificar_celula(MAPA *mapa, PERSONAGEM *jogador, const char *caminho, int s
 
         adicionar_item(jogador, item);
         salvar_jogo(jogador, mapa, caminho);
-
-        printf("Voce encontrou: %s!\n", item.nome);
-        printf("Pressione Enter para continuar...\n");
         fflush(stdout);
         getchar();
     }

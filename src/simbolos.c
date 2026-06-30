@@ -1,5 +1,11 @@
 #include "simbolos.h"
 
+// ============================================================
+// tabela de símbolos
+// ============================================================
+
+// A tabela define como cada caractere do mapa deve ser interpretado pelo
+// jogo, incluindo se ele é transitável, se contém inimigo, baú ou saída.
 DEFINICAO_SIMBOLO tabela_simbolos[NUM_SIMBOLOS] = {
     { SIM_PAREDE,       0, 0, 0, 0 },
     { SIM_PAREDE_VEG,   0, 0, 0, 0 },

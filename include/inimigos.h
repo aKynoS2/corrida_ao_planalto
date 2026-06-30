@@ -3,6 +3,10 @@
 
 #include "personagem.h"
 
+// ============================================================
+// definição inimigos
+// ============================================================
+
 #define INIMIGO_LOBISTA                   0
 #define INIMIGO_BOT_REDE_SOCIAL           1
 #define INIMIGO_CABO_ELEITORAL            2

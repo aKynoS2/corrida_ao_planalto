@@ -275,7 +275,8 @@ void carregar_mapa_com_estado(MAPA *mapa, const char *caminho_txt, int slot) {
     // Ao carregar um mapa, também tenta restaurar o estado salvo do mesmo
     // mapa para manter itens, inimigos e células alteradas entre sessões.
     carregar_mapa(mapa, caminho_txt);
-    strcpy(mapa->mapa_atual, caminho_txt);
+    strncpy(mapa->mapa_atual, caminho_txt, sizeof(mapa->mapa_atual) - 1);
+    mapa->mapa_atual[sizeof(mapa->mapa_atual) - 1] = '\0';
 
     carregar_estado_mapa(mapa, slot);
 }
@@ -386,7 +387,8 @@ int verificar_celula(MAPA *mapa, PERSONAGEM *jogador, const char *caminho, int s
 
         for (int i = 0; i < mapa->num_saidas; i++) {
             if (mapa->saidas[i].x == x && mapa->saidas[i].y == y) {
-                strcpy(destino, mapa->saidas[i].destino_arquivo);
+                strncpy(destino, mapa->saidas[i].destino_arquivo, sizeof(destino) - 1);
+                destino[sizeof(destino) - 1] = '\0';
                 saida_x = mapa->saidas[i].destino_x;
                 saida_y = mapa->saidas[i].destino_y;
                 break;

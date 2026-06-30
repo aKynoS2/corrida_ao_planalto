@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/personagem.h"
-#include "../include/combate.h"
-#include "../include/mapa.h"
-#include "../include/utils.h"
+#include "personagem.h"
+#include "combate.h"
+#include "mapa.h"
+#include "utils.h"
 
 // ============================================================
 // loop de combate
@@ -33,6 +33,11 @@ static int executar_turno_jogador(PERSONAGEM *jogador, INIMIGO *inimigo) {
         }
             
         case 2: {
+            if (jogador->num_itens == 0) {
+                adicionar_mensagem("Você não tem itens!");
+                return 0;
+            }
+          
             imprimir_tela_inventario(jogador);
             
             char buf[TAM_MENSAGEM];

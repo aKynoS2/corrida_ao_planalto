@@ -51,7 +51,7 @@ void iniciar_nova_partida(PERSONAGEM *jogador, MAPA *mapa, char *caminho, int sl
     inicializar_jogador(jogador);
     inicializar_mapa(mapa);
 
-    sprintf(caminho, "data/saves/save%d.dat", slot);
+    snprintf(caminho, 50, "data/saves/save%d.dat", slot);
     limpar_estados_slot(slot);
     remove(caminho);
     carregar_mapa_com_estado(mapa, "data/maps/mapa_norte.txt", slot);
@@ -211,11 +211,11 @@ void limpar_estados_slot(int slot) {
         "mapa_sudeste.txt", "mapa_sul.txt", "mapa_brasilia.txt"
     };
 
-    sprintf(save, "data/saves/save%d.dat", slot);
+    snprintf(save, sizeof(save), "data/saves/save%d.dat", slot);
     remove(save);
 
     for (int i = 0; i < 6; i++) {
-        sprintf(estado, "data/saves/slot%d_%s.state", slot, mapas[i]);
+        snprintf(estado, sizeof(estado), "data/saves/slot%d_%s.state", slot, mapas[i]);
         remove(estado);
     }
 }
@@ -294,7 +294,6 @@ static int processar_inventario(PERSONAGEM *jogador) {
         return 1;
     }
 
-    getchar();
     usar_item(jogador, indice);
     return 1;
 }

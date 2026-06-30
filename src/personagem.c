@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/utils.h"
-#include "../include/personagem.h"
+#include "utils.h"
+#include "personagem.h"
 
 // ============================================================
 // verificação de nível
@@ -89,6 +89,8 @@ void imprimir_tela_inventario(PERSONAGEM *jogador) {
 void usar_item(PERSONAGEM *jogador, int indice) {
     // O inventário é tratado como uma lista compactada: ao consumir o item,
     // a posição é removida e os demais elementos deslocam-se para ocupar o espaço.
+    char buf[TAM_MENSAGEM];
+    
     if (indice < 1 || indice > jogador->num_itens) {
         printf("Índice inválido!\n");
         return;
@@ -97,50 +99,52 @@ void usar_item(PERSONAGEM *jogador, int indice) {
     ITEM *item = &jogador->inventario[indice - 1];
     if (item->quantidade <= 0) {
         
-        char buf[TAM_MENSAGEM];
         snprintf(buf, sizeof(buf), "Você não tem mais %s!", item->nome);
         adicionar_mensagem(buf);
 
         return;
     }
 
-    if (item->tipo == 0) {
-        if (jogador->arma_equipada >= 0) {
-            jogador->ataque -= jogador->inventario[jogador->arma_equipada].valor;
-        }
-        jogador->ataque += item->valor;
-        jogador->arma_equipada = indice - 1;
+    switch (item->tipo) {
+        case 0: {
+            if (jogador->arma_equipada >= 0) {
+                jogador->ataque -= jogador->inventario[jogador->arma_equipada].valor;
+            }
+            jogador->ataque += item->valor;
+            jogador->arma_equipada = indice - 1;
         
-        char buf[TAM_MENSAGEM];
-        snprintf(buf, sizeof(buf), "Você equipou %s e aumentou seu ataque em %d!", item->nome, item->valor);
-        adicionar_mensagem(buf);
-    }
-
-    if (item->tipo == 1) {
-        if (jogador->armadura_equipada >= 0) {
-            jogador->defesa -= jogador->inventario[jogador->armadura_equipada].valor;
+            snprintf(buf, sizeof(buf), "Você equipou %s e aumentou seu ataque em %d!", item->nome, item->valor);
+            adicionar_mensagem(buf);
+            break;
         }
-        jogador->defesa += item->valor;
-        jogador->armadura_equipada = indice - 1;
+
+        case 1: {
+            if (jogador->armadura_equipada >= 0) {
+                jogador->defesa -= jogador->inventario[jogador->armadura_equipada].valor;
+            }
+            jogador->defesa += item->valor;
+            jogador->armadura_equipada = indice - 1;
         
-        char buf[TAM_MENSAGEM];
-        snprintf(buf, sizeof(buf), "Você equipou %s e aumentou sua defesa em %d!", item->nome, item->valor);
-        adicionar_mensagem(buf);
-    }
-
-    if (item->tipo == 2) {
-        jogador->hp += item->valor;
-        if (jogador->hp > jogador->hp_max) {
-            jogador->hp = jogador->hp_max;
+            snprintf(buf, sizeof(buf), "Você equipou %s e aumentou sua defesa em %d!", item->nome, item->valor);
+            adicionar_mensagem(buf);
+            break;
         }
 
-        char buf[TAM_MENSAGEM];
-        snprintf(buf, sizeof(buf), "Você usou %s e recuperou %d HP!", item->nome, item->valor);
-        adicionar_mensagem(buf);
+        case 2: {
 
-        item->quantidade--;
-        if (item->quantidade == 0) {
-            remover_item_em_indice(jogador, indice);
+            jogador->hp += item->valor;
+            if (jogador->hp > jogador->hp_max) {
+                jogador->hp = jogador->hp_max;
+            }
+
+            snprintf(buf, sizeof(buf), "Você usou %s e recuperou %d HP!", item->nome, item->valor);
+            adicionar_mensagem(buf);
+
+            item->quantidade--;
+            if (item->quantidade == 0) {
+                remover_item_em_indice(jogador, indice);
+            }
+            break;
         }
     }
 }

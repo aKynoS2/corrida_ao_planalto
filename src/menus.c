@@ -70,7 +70,7 @@ int menu_principal(char *caminho_out) {
         if (opcao == 1 || opcao == 2) {
             int slot = menu_slot(opcao);
             if (slot == 0) continue;
-            sprintf(caminho_out, "data/saves/save%d.dat", slot);
+            snprintf(caminho_out, 50, "data/saves/save%d.dat", slot);
             return (opcao == 1) ? MENU_NOVO_JOGO : MENU_CARREGAR;
         }
     }

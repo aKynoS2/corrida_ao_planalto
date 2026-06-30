@@ -26,4 +26,5 @@ DEFINICAO_SIMBOLO tabela_simbolos[NUM_SIMBOLOS] = {
     { SIM_SAIDA_BAIXO,  1, 0, 0, 1 },
     { SIM_SAIDA_CIMA,   1, 0, 0, 1 },
     { SIM_CIDADE,       1, 0, 0, 0 },
+    { SIM_JOGADOR,      1, 0, 0, 0 },
 };

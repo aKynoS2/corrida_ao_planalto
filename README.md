@@ -34,20 +34,24 @@ Cada região conquistada contribui à sua experiência política. Cada combate v
 
 ### Sistemas Implementados
 
-| Sistema               | Status | Detalhes                                                      |
-| --------------------- | ------ | ------------------------------------------------------------- |
-| ⚔️ Combate por turnos | ✅     | Menu atacar/fugir, cálculo de dano, ganho de XP               |
-| 🗺️ Movimentação       | ✅     | WASD, colisão, viewport 40×20 com câmera centralizada         |
-| 📈 Progressão         | ✅     | XP, level up automático com melhoria de stats                 |
-| 🎒 Inventário         | ✅     | 20 slots, listar, usar itens                                  |
-| 🎁 Baús               | ✅     | Item aleatório do catálogo ao pisar                           |
-| 💾 Save/Load          | ✅     | 3 slots binários com serialização manual do grid              |
-| ⏸️ Pausa              | ✅     | Tecla `P`, menu continuar/salvar/sair                         |
-| 🌍 Mapas              | ✅     | 6 mapas temáticos completos com transições bidirecionais      |
-| 🚪 Transições         | ✅     | Múltiplas saídas por mapa com persistência de estado por slot |
-| 🎨 Cores              | ✅     | Cada símbolo com cor ANSI, renderização via buffer único      |
-| 🔤 Símbolos ASCII     | ✅     | 19 símbolos com comportamento via tabela                      |
-| 📋 Menus              | ✅     | ASCII art, cores, seleção de slot, confirmação de sobrescrita |
+| Sistema               | Status | Detalhes                                                                    |
+| --------------------- | ------ | --------------------------------------------------------------------------- |
+| ⚔️ Combate por turnos | ✅     | Tela dedicada, opções: atacar/usar item/fugir, cálculo de dano, ganho de XP |
+| 🗺️ Movimentação       | ✅     | WASD, colisão, viewport 40×20 com câmera centralizada                       |
+| 📈 Progressão         | ✅     | XP, level up automático com melhoria de stats                               |
+| 🎒 Inventário         | ✅     | 20 slots, tela dedicada, listar e usar itens                                |
+| 🗡️ Equipamentos       | ✅     | Armas e armaduras equipáveis com bônus de ataque/defesa                     |
+| 🎁 Baús               | ✅     | Item aleatório do catálogo ao pisar                                         |
+| 💾 Save/Load          | ✅     | 3 slots binários com serialização manual do grid                            |
+| ⏸️ Pausa              | ✅     | Tecla `P`, menu continuar/salvar/sair                                       |
+| 🌍 Mapas              | ✅     | 6 mapas temáticos completos com transições bidirecionais                    |
+| 🚪 Transições         | ✅     | Múltiplas saídas por mapa com persistência de estado por slot               |
+| 🎨 Cores              | ✅     | Cada símbolo com cor ANSI, renderização via buffer único                    |
+| 🔤 Símbolos ASCII     | ✅     | 20 símbolos com comportamento via tabela                                    |
+| 📋 Menus              | ✅     | ASCII art, cores, seleção de slot com nível e região                        |
+| 📊 HUD                | ✅     | HP, XP, nível, mana e região visíveis durante o jogo                        |
+| 💬 Buffer de Eventos  | ✅     | Fila FIFO de 3 mensagens exibidas no HUD e no combate                       |
+| 🔒 Segurança          | ✅     | snprintf + strncpy com proteção de buffer overflow                          |
 
 ---
 
@@ -93,6 +97,7 @@ Cada região conquistada contribui à sua experiência política. Cada combate v
 | Símbolo         | Significado               |  Transitável   | Cor               |
 | --------------- | ------------------------- | :------------: | ----------------- |
 | `#`             | Parede/borda              |       ❌       | Branco            |
+| `%`             | Parede vegetal            |       ❌       | Verde             |
 | `T`             | Árvore/vegetação          |       ❌       | Verde             |
 | `&`             | Estrutura urbana          |       ❌       | Cinza             |
 | `=`             | Água (rio/lago)           |       ❌       | Azul              |
@@ -101,6 +106,7 @@ Cada região conquistada contribui à sua experiência política. Cada combate v
 | `,`             | Grama                     |       ✅       | Verde claro       |
 | `_`             | Estrada/ponte             |       ✅       | Amarelo           |
 | `:`             | Terra seca                |       ✅       | Amarelo           |
+| `'`             | Pedra solta               |       ✅       | Cinza             |
 | `~`             | Raso (beira d'água)       |       ✅       | Ciano             |
 | `E`             | Inimigo                   |  ✅ (combate)  | Vermelho          |
 | `?`             | Baú                       |   ✅ (item)    | Magenta           |
@@ -136,13 +142,13 @@ Cada região conquistada contribui à sua experiência política. Cada combate v
 
 ## Catálogo de Itens
 
-| #   | Nome              | Tipo     | Efeito                      |
-| --- | ----------------- | -------- | --------------------------- |
-| 0   | Santinho          | Poção    | Recupera 10 HP              |
-| 1   | Horário Eleitoral | Arma     | Buff ataque (planejado)     |
-| 2   | Dossiê            | Especial | Efeito especial (planejado) |
-| 3   | Caixa 2           | Arma     | Buff ataque (planejado)     |
-| 4   | Apoio Popular     | Armadura | Buff defesa (planejado)     |
+| #   | Nome              | Tipo     | Efeito                   |
+| --- | ----------------- | -------- | ------------------------ |
+| 0   | Santinho          | Poção    | Recupera 10 HP           |
+| 1   | Horário Eleitoral | Arma     | +5 de ataque ao equipar  |
+| 2   | Dossiê            | Poção    | Recupera 20 HP           |
+| 3   | Caixa 2           | Arma     | +10 de ataque ao equipar |
+| 4   | Apoio Popular     | Armadura | +3 de defesa ao equipar  |
 
 ---
 
@@ -156,7 +162,7 @@ Cada região conquistada contribui à sua experiência política. Cada combate v
 ### Build
 
 ```bash
-gcc src/*.c -I./include -o jogo -Wall -Wextra -g
+gcc src/*.c -I./include -o jogo -Wall -Wextra -g -fno-strict-aliasing
 ```
 
 ### Executar
@@ -177,10 +183,10 @@ jogo.exe
 src/
 ├── main.c          # inicialização + loop de menu + chamada rodar_jogo()
 ├── mapa.c/.h       # renderização, câmera, carregamento, estado, cores, movimento
-├── combate.c/.h    # loop de combate por turnos
-├── personagem.c/.h # structs, level up, inventário
-├── utils.c/.h      # menus, save/load, rodar_jogo(), utilitários
-├── simbolos.c/.h   # tabela de 19 símbolos ASCII
+├── combate.c/.h    # loop de combate por turnos + tela de combate
+├── personagem.c/.h # structs, level up, inventário, tela de inventário, equipamentos
+├── utils.c/.h      # menus, save/load, rodar_jogo(), HUD, buffer de mensagens
+├── simbolos.c/.h   # tabela de 20 símbolos ASCII
 ├── inimigos.c/.h   # catálogo de 5 inimigos
 └── itens.c/.h      # catálogo de 5 itens
 
@@ -197,7 +203,13 @@ data/
 
 **Renderização com buffer**: frame inteiro montado em `char buffer[32768]` com agrupamento de cores ANSI — um único `printf` por frame.
 
-**Catálogos em `.c`**: `tabela_simbolos[]`, `catalogo_inimigos[]` e `catalogo_itens[]` definidos em arquivos `.c` com `extern` nos `.h` — elimina o warning de `defined but not used`.
+**Buffer de mensagens**: array global `char mensagens[3][80]` em `utils.c` — fila FIFO de eventos visíveis no HUD e na tela de combate. Qualquer módulo pode chamar `adicionar_mensagem()`.
+
+**Equipamentos com slot único**: `arma_equipada` e `armadura_equipada` na struct `PERSONAGEM` guardam o índice do item equipado. Ao trocar, o bônus anterior é revertido antes de aplicar o novo.
+
+**Telas dedicadas**: combate e inventário limpam a tela e exibem interface própria — sem sobreposição com o mapa.
+
+**Catálogos em `.c`**: `tabela_simbolos[]`, `catalogo_inimigos[]` e `catalogo_itens[]` definidos em arquivos `.c` com `extern` nos `.h`.
 
 **Dois arquivos de persistência por slot**:
 
@@ -208,13 +220,12 @@ data/
 
 **Modularização**: `main.c` só inicializa e chama `rodar_jogo()`. Lógica de mapa em `mapa.c`, menus e fluxo em `utils.c`. Retornos por `int` eliminam `goto`.
 
+**Segurança**: `snprintf` com sizeof para todos os paths, `strncpy` com null terminator garantido.
+
 ---
 
-## Pendências Conhecidas (Post-Week 4)
+## Pendências Conhecidas (Post-Entrega)
 
-- HUD com vida, XP e nível durante o jogo
-- Efeitos de armas e armaduras não implementados
-- Itens e habilidades em combate
 - Sistema de aliados (planejado)
 - Sistema de escândalos/flags (planejado)
 - Boss final escalável (planejado)
@@ -234,7 +245,7 @@ Requisitos obrigatórios: **✅ Todos atendidos**
 
 ## Versionamento
 
-- **Versão**: 1.2 (Campanha Completa + Cores + Modularização)
+- **Versão**: 1.4 (Week 5 — HUD + Equipamentos + Telas Dedicadas + Segurança)
 - **Linguagem**: C (C99, stdlib apenas)
 - **Plataforma**: Terminal (Windows/Linux/macOS)
 - **Repositório**: https://github.com/aKynoS2/corrida_ao_planalto
